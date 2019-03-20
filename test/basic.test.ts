@@ -18,6 +18,21 @@ test("can spawn server and serve a route", async t => {
     .expect(200)
 
   t.is(response.text, "Hello World")
-  t.is(response.status, 200)
   t.is(routeHandlerWasCalled, true)
 })
+
+test("service.listen() works", async t => {
+  const route = Route.get("(.*)", () => Response.Text("Hello World"))
+  const server = await Service(route).listen(3000)
+
+  try {
+    await request("http://localhost:3000").get("/").expect(200)
+  } finally {
+    await server.close()
+  }
+  t.pass()
+})
+
+test.todo("requesting an unhandled URL results in a 404 error")
+test.todo("can parse query parameters")
+test.todo("can parse path parameters")

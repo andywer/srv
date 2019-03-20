@@ -1,12 +1,10 @@
 import * as http from "http"
 import stoppable from "stoppable"
-import { Request } from "./request"
-import { applyResponseTo, Response } from "./response"
-import { assertRoute, Route } from "./route"
-import { Router } from "./router"
-
-type HttpRequestHandler = (req: http.IncomingMessage, res: http.ServerResponse) => void
-type Middleware = (request: Request, next: (nextRequest: Request) => Promise<Response>) => Promise<Response>
+import { Request } from "./core/request"
+import { applyResponseTo, Response } from "./core/response"
+import { assertRoute, Route } from "./core/route"
+import { DefaultErrorMiddleware } from "./middlewares/error"
+import { HttpRequestHandler, Middleware } from "./types"
 
 export interface Service {
   readonly middlewares: Middleware[]
@@ -17,8 +15,12 @@ export interface Service {
 }
 
 export interface ServiceOptions {
-  gracefulCloseTimeout?: number
+  gracefulCloseTimeout?: number,
 }
+
+const defaultMiddlewares: Middleware[] = [
+  DefaultErrorMiddleware
+]
 
 function assertMiddleware(middleware: any): Middleware {
   if (middleware && typeof middleware === "function") {
@@ -73,11 +75,10 @@ export function Service(
 
   const { gracefulCloseTimeout = Infinity } = options
 
-  // FIXME: Set up default middlewares (error handler)
-  const middlewares = [...customMiddlewares]
+  const middlewares = [...defaultMiddlewares, ...customMiddlewares]
 
   const defaultErrorHandler = (error: any) => {
-    console.error("Internal service error:", error)
+    console.error("Internal service error:", error.stack || error)
     process.exit(1)
   }
 
