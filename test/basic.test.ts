@@ -33,6 +33,19 @@ test("service.listen() works", async t => {
   t.pass()
 })
 
+test("can redirect", async t => {
+  const service = Service([
+    Route.get("(.*)", () => Response.Redirect("https://github.com/andywer"))
+  ])
+
+  await request(service.handler())
+    .get("/")
+    .expect(302)
+    .expect("Location", "https://github.com/andywer")
+
+  t.pass()
+})
+
 test.todo("requesting an unhandled URL results in a 404 error")
 test.todo("can parse query parameters")
 test.todo("can parse path parameters")
