@@ -8,9 +8,11 @@ Node.js server frameworks rethought. Functional, lean, performant.
 * Immutable, but extendable data makes debugging easy
 * Few dependencies & less than 1000 lines of code
 
-**Status: Experimental**
+<p align="center">
+  <b>Status: Experimental ⚠️</b>
+</p>
 
-## In a nut shell
+## At a glance
 
 ```ts
 import {
@@ -34,6 +36,8 @@ service.listen(8080)
 ```
 
 ## Documentation
+
+Find some documentation and sample code here. Work in progress right now.
 
 <!-- Basics -->
 * [Routing](./docs/routing.md)
