@@ -13,16 +13,16 @@ export interface Route<Req extends Request = Request, Res extends Response = Res
 }
 
 interface RouteCreators {
-  any(path: string, handler: RequestHandler): Route
-  get(path: string, handler: RequestHandler): Route
-  delete(path: string, handler: RequestHandler): Route
-  head(path: string, handler: RequestHandler): Route
-  link(path: string, handler: RequestHandler): Route
-  options(path: string, handler: RequestHandler): Route
-  patch(path: string, handler: RequestHandler): Route
-  post(path: string, handler: RequestHandler): Route
-  put(path: string, handler: RequestHandler): Route
-  unlink(path: string, handler: RequestHandler): Route
+  ANY(path: string, handler: RequestHandler): Route
+  GET(path: string, handler: RequestHandler): Route
+  DELETE(path: string, handler: RequestHandler): Route
+  HEAD(path: string, handler: RequestHandler): Route
+  LINK(path: string, handler: RequestHandler): Route
+  OPTIONS(path: string, handler: RequestHandler): Route
+  PATCH(path: string, handler: RequestHandler): Route
+  POST(path: string, handler: RequestHandler): Route
+  PUT(path: string, handler: RequestHandler): Route
+  UNLINK(path: string, handler: RequestHandler): Route
 }
 
 const debug = DebugLogger("srv:route")
@@ -79,13 +79,13 @@ export const Route = function Route(handler: RequestHandler, options: RouteOptio
   }
 } as ((handler: RequestHandler, options?: RouteOptions) => Route) & RouteCreators
 
-Route.any = VerbRouteHandler("*")
-Route.get = VerbRouteHandler("GET")
-Route.delete = VerbRouteHandler("DELETE")
-Route.head = VerbRouteHandler("HEAD")
-Route.link = VerbRouteHandler("LINK")
-Route.options = VerbRouteHandler("OPTIONS")
-Route.patch = VerbRouteHandler("PATCH")
-Route.post = VerbRouteHandler("POST")
-Route.put = VerbRouteHandler("PUT")
-Route.unlink = VerbRouteHandler("UNLINK")
+Route.ANY = VerbRouteHandler("*")
+Route.GET = VerbRouteHandler("GET")
+Route.DELETE = VerbRouteHandler("DELETE")
+Route.HEAD = VerbRouteHandler("HEAD")
+Route.LINK = VerbRouteHandler("LINK")
+Route.OPTIONS = VerbRouteHandler("OPTIONS")
+Route.PATCH = VerbRouteHandler("PATCH")
+Route.POST = VerbRouteHandler("POST")
+Route.PUT = VerbRouteHandler("PUT")
+Route.UNLINK = VerbRouteHandler("UNLINK")

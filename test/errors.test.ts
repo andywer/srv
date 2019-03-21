@@ -4,7 +4,7 @@ import request from "supertest"
 import { Route, Service, Response } from "../src/index"
 
 test("handles internal server errors", async t => {
-  const route = Route.get("(.*)", async () => {
+  const route = Route.GET("(.*)", async () => {
     throw Error("Something went wrong")
   })
   const service = Service(route)
@@ -17,7 +17,7 @@ test("handles internal server errors", async t => {
 })
 
 test("handles explicit 500 errors", async t => {
-  const route = Route.get("(.*)", async () => {
+  const route = Route.GET("(.*)", async () => {
     throw HttpError(500, "Something went wrong.")
   })
   const service = Service(route)
@@ -30,7 +30,7 @@ test("handles explicit 500 errors", async t => {
 })
 
 test("handles 4xx errors", async t => {
-  const route = Route.get("(.*)", async () => {
+  const route = Route.GET("(.*)", async () => {
     throw HttpError(401, "You are not allowed to see that.")
   })
   const service = Service(route)
@@ -43,7 +43,7 @@ test("handles 4xx errors", async t => {
 })
 
 test("route handler can throw response", async t => {
-  const route = Route.get("(.*)", async () => {
+  const route = Route.GET("(.*)", async () => {
     throw Response.JSON(401, { failed: true })
   })
   const service = Service(route)

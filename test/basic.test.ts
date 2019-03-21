@@ -5,7 +5,7 @@ import { Response, Route, Service } from "../src/index"
 test("can spawn server and serve a route", async t => {
   let routeHandlerWasCalled = false
 
-  const route = Route.get("(.*)", async req => {
+  const route = Route.GET("(.*)", async req => {
     routeHandlerWasCalled = true
     t.is(req.method, "GET")
     t.is(req.path(), "/")
@@ -22,7 +22,7 @@ test("can spawn server and serve a route", async t => {
 })
 
 test("service.listen() works", async t => {
-  const route = Route.get("(.*)", () => Response.Text("Hello World"))
+  const route = Route.GET("(.*)", () => Response.Text("Hello World"))
   const server = await Service(route).listen(3000)
 
   try {
@@ -35,7 +35,7 @@ test("service.listen() works", async t => {
 
 test("can redirect", async t => {
   const service = Service([
-    Route.get("(.*)", () => Response.Redirect("https://github.com/andywer"))
+    Route.GET("(.*)", () => Response.Redirect("https://github.com/andywer"))
   ])
 
   await request(service.handler())
