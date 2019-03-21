@@ -3,6 +3,7 @@ import stoppable from "stoppable"
 import { Request } from "./core/request"
 import { applyResponseTo, Response } from "./core/response"
 import { assertRoute, Route } from "./core/route"
+import { Router } from "./core/router"
 import { DefaultErrorMiddleware } from "./middlewares/error"
 import { HttpRequestHandler, Middleware } from "./types"
 
@@ -61,17 +62,17 @@ function routeToMiddleware(route: Route) {
   return (request: Request) => Promise.resolve(route.handler(request))
 }
 
-export function Service(routing: Route, middlewares: Middleware[], options?: ServiceOptions): Service
-export function Service(routing: Route, options?: ServiceOptions): Service
+export function Service(routing: Route | Route[], middlewares: Middleware[], options?: ServiceOptions): Service
+export function Service(routing: Route | Route[], options?: ServiceOptions): Service
 
 export function Service(
-  router: Route,
+  routing: Route | Route[],
   second?: Middleware[] | ServiceOptions,
   third?: ServiceOptions
 ) {
   const customMiddlewares: Middleware[] = Array.isArray(second) ? second.map(assertMiddleware) : []
   const options: ServiceOptions = (Array.isArray(second) ? third : second) || {}
-  const rootRouter: Route = assertRoute(router)
+  const rootRouter: Route = Array.isArray(routing) ? Router(routing) : assertRoute(routing)
 
   const { gracefulCloseTimeout = Infinity } = options
 
