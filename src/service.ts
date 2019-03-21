@@ -37,6 +37,10 @@ function createRequestHandler(stack: Middleware[], onUnhandledError: (error: Err
 
     runRequestHandlerStack(stack, request)
       .then(response => {
+        if (response.skip) {
+          // Some route handlers were run, but none of them felt responsible for this request
+          response = Response.NotFound(request)
+        }
         return applyResponseTo(response, res)
       })
       .catch(onUnhandledError)
