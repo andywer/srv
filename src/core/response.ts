@@ -3,6 +3,7 @@ import * as http from "http"
 import statuses from "statuses"
 import * as stream from "stream"
 import { Request } from "./request"
+import { deriveImmutable } from "./util"
 
 // TODO: Delegate response methods (<https://github.com/koajs/koa/blob/master/lib/context.js#L191>)
 
@@ -76,21 +77,6 @@ interface ResponseCreators {
 const debug = DebugLogger("srv:response")
 
 const isStream = (thing: any): thing is stream.Readable => thing && typeof thing === "object" && typeof thing.pipe === "function"
-
-function deriveImmutable<
-  Base extends {},
-  Props extends { [key: string]: any }
->(base: Base, props: Props): Base & Props {
-  const propDescriptors: PropertyDescriptorMap = {}
-  for (const key of Object.keys(props)) {
-    propDescriptors[key] = {
-      enumerable: true,
-      value: props[key],
-      writable: false
-    } as PropertyDescriptor
-  }
-  return Object.create(base, propDescriptors)
-}
 
 function getTextContentType(text: string) {
   return text.match(/^<!doctype html>/i) || text.match(/^<html[> ]/i)
@@ -197,7 +183,7 @@ Response.JSON = function JSONResponse<Data>(
       },
       status: first
     })
-  } else if (Buffer.isBuffer(first)) {
+  } else if (typeof first !== "undefined" && typeof first !== "function") {
     return Response({
       status: 200,
       headers: {
@@ -207,7 +193,7 @@ Response.JSON = function JSONResponse<Data>(
       body: Buffer.from(JSON.stringify(first), "utf8")
     })
   } else {
-    throw Error("Response.JSON(): Argument error")
+    throw Error(`Response.JSON(): Argument error. First argument: ${first}`)
   }
 }
 
