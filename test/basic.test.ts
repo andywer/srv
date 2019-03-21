@@ -23,10 +23,10 @@ test("can spawn server and serve a route", async t => {
 
 test("service.listen() works", async t => {
   const route = Route.GET("(.*)", () => Response.Text("Hello World"))
-  const server = await Service(route).listen(3000)
+  const server = await Service(route).listen(3123)
 
   try {
-    await request("http://localhost:3000").get("/").expect(200)
+    await request("http://localhost:3123").get("/").expect(200)
   } finally {
     await server.close()
   }
@@ -46,6 +46,46 @@ test("can redirect", async t => {
   t.pass()
 })
 
-test.todo("requesting an unhandled URL results in a 404 error")
-test.todo("can parse query parameters")
-test.todo("can parse path parameters")
+test("requesting an unhandled URL results in a 404 error", async t => {
+  const service = Service([
+    Route.GET("/", () => Response.Text(""))
+  ])
+
+  await request(service.handler())
+    .get("/wtf")
+    .expect(404)
+
+  t.pass()
+})
+
+test("can parse query parameters", async t => {
+  const service = Service([
+    Route.GET("/", (request) => Response.JSON(request.query()))
+  ])
+
+  const response = await request(service.handler())
+    .get("/")
+    .query("name=Andy&where=developer&where=crazy")
+    .expect(200)
+
+  t.deepEqual(response.body, {
+    name: "Andy",
+    where: ["developer", "crazy"]
+  })
+})
+
+test("can parse path parameters", async t => {
+  const service = Service([
+    Route.GET("/:primary/test/:secondary/(.+)", (request) => Response.JSON(request.params))
+  ])
+
+  const response = await request(service.handler())
+    .get("/foo/test/bar/add/2")
+    .expect(200)
+
+  t.deepEqual(response.body, {
+    "0": "add/2",
+    primary: "foo",
+    secondary: "bar"
+  })
+})

@@ -5,8 +5,12 @@ import qs from "querystring"
 import * as stream from "stream"
 import * as tls from "tls"
 import { Url } from "url"
+import { deriveImmutable } from "./util"
 
 // TODO: Delegate response methods (<https://github.com/koajs/koa/blob/master/lib/context.js#L213>)
+
+type AnyParams = { [name: string]: string }
+type AnyQuery = { [name: string]: string | string[] }
 
 type ParsedURL = Url
 
@@ -51,13 +55,15 @@ function toArray<T>(thing: T | T[] | undefined | null): T[] {
 }
 
 export interface Request<
-  Query extends { [name: string]: string | string[] } = { [name: string]: string | string[] }
+  Params extends AnyParams = AnyParams,
+  Query extends AnyQuery = AnyQuery
 > {
   [$parsedQuery]: Query | null
   [$parsedURL]: ParsedURL | null
   readonly encrypted: boolean
   readonly headers: http.OutgoingHttpHeaders
   readonly method: string
+  readonly params: Params
   readonly url: string
   readonly rawHeaders: string[]
   readonly rawRequest: http.IncomingMessage
@@ -70,11 +76,24 @@ export interface Request<
   path(): string
   query(): Query
   stream(): stream.Readable
+
+  derive<
+    NewParams extends AnyParams = AnyParams,
+    NewQuery extends AnyQuery = AnyQuery
+  >(
+    options: Partial<Request>
+  ): Request<NewParams, NewQuery>
 }
 
-const requestPrototype: Pick<Request, "buffer" | "get" | "getAll" | "path" | "query" | "stream"> = {
+const requestPrototype: Pick<Request, "buffer" | "derive" | "get" | "getAll" | "path" | "query" | "stream"> = {
   buffer(this: Request) {
     return streamToBuffer(this.stream())
+  },
+  derive<
+    NewParams extends AnyParams = AnyParams,
+    NewQuery extends AnyQuery = AnyQuery
+  >(this: Request, options: Partial<Request>) {
+    return deriveImmutable(this, options) as Request<NewParams, NewQuery>
   },
   get(this: Request, headerName: string) {
     const values = this.getAll(headerName)
@@ -131,6 +150,11 @@ export function Request(req: http.IncomingMessage): Request {
       enumerable: true,
       writable: false,
       value: req.method
+    },
+    params: {
+      enumerable: true,
+      writable: false,
+      value: {}
     },
     url: {
       enumerable: true,

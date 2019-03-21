@@ -35,6 +35,16 @@ export function assertRoute(route: any): Route {
   }
 }
 
+function addParamsToRequest(request: Request, pathParamKeys: PathKey[], unnamedParams: string[]) {
+  const params: { [name: string]: string } = {}
+
+  for (let i = 0; i < pathParamKeys.length; i++) {
+    params[pathParamKeys[i].name] = unnamedParams[i]
+  }
+
+  return request.derive({ params })
+}
+
 function VerbRouteHandler(method: string | "*") {
   return function (path: string, routeHandler: RequestHandler): Route {
     const matchAnyVerb = method === "*"
@@ -45,7 +55,15 @@ function VerbRouteHandler(method: string | "*") {
     debug(`Creating route handler... ${matchAnyVerb ? "" : method} ${path} (Regex: ${pathRegex})`)
 
     const handler = (request: Request) => {
-      if ((matchAnyVerb || request.method === method) && pathRegex.test(request.path())) {
+      const methodMatch = matchAnyVerb || request.method === method
+      const pathMatch = methodMatch ? pathRegex.exec(request.path()) : null
+
+      if (methodMatch && pathMatch) {
+        if (pathMatch.length > 1) {
+          const unnamedParams = pathMatch.slice(1)
+          request = addParamsToRequest(request, pathParamKeys, unnamedParams)
+        }
+
         debug(`Match: Route handler [${matchAnyVerb ? "" : method} ${path}] matches ${request.method} ${request.url}`)
         // TODO: Use Object.create() to create derived request object containing path params
         return routeHandler(request)
