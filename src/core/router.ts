@@ -3,7 +3,7 @@ import { Request } from "./request"
 import { Response } from "./response"
 import { assertRoute, Route } from "./route"
 
-const debug = DebugLogger("waterfall:router")
+const debug = DebugLogger("srv:router")
 let nextRouterID = 1
 
 export function Router(routes: Route[]): Route {

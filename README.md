@@ -1,4 +1,4 @@
-# waterfall
+# SRV
 
 Node.js server rethought. Functional, clean, performant.
 

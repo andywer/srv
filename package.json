@@ -1,5 +1,5 @@
 {
-  "name": "waterfall",
+  "name": "@andywer/srv",
   "version": "0.0.0",
   "description": "Node.js server rethought. Functional, clean, performant.",
   "license": "MIT",

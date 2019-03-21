@@ -73,7 +73,7 @@ interface ResponseCreators {
   Skip(): SkipResponse
 }
 
-const debug = DebugLogger("waterfall:response")
+const debug = DebugLogger("srv:response")
 
 const isStream = (thing: any): thing is stream.Readable => thing && typeof thing === "object" && typeof thing.pipe === "function"
 

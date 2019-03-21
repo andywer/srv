@@ -25,7 +25,7 @@ interface RouteCreators {
   unlink(path: string, handler: RequestHandler): Route
 }
 
-const debug = DebugLogger("waterfall:route")
+const debug = DebugLogger("srv:route")
 
 export function assertRoute(route: any): Route {
   if (route && typeof route === "object" && typeof route.handler === "function") {
