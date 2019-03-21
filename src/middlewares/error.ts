@@ -3,6 +3,11 @@ import { Request } from "../core/request"
 import { Response } from "../core/response"
 import { Middleware, RequestHandler } from "../types"
 
+function logToStderr(thing: any) {
+  if (process.env.SRV_LOG_5XX === "false" || process.env.SRV_LOG_5XX === "FALSE") return
+  console.error(thing)
+}
+
 export const DefaultErrorMiddleware: Middleware =
   async function DefaultErrorMiddleware(request: Request, next: RequestHandler): Promise<Response>
 {
@@ -10,7 +15,7 @@ export const DefaultErrorMiddleware: Middleware =
     return await next(request)
   } catch (error) {
     if (!error) {
-      console.error(Error("Falsy value was thrown."))
+      logToStderr(Error("Falsy value was thrown."))
       return Response.Text(500, "500 Internal Server Error")
     }
 
@@ -25,7 +30,7 @@ export const DefaultErrorMiddleware: Middleware =
     const status = error.statusCode || error.status || defaultStatus
 
     if (status >= 500 && status <= 599) {
-      console.error(error.stack || error)
+      logToStderr(error.stack || error)
     }
 
     return Response.Text(status, error.expose ? error.message : `${status} ${statuses[status]}`)
