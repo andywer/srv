@@ -56,7 +56,7 @@ function VerbRouteHandler(method: string | "*") {
 
     const handler = (request: Request) => {
       const methodMatch = matchAnyVerb || request.method === method
-      const pathMatch = methodMatch ? pathRegex.exec(request.path()) : null
+      const pathMatch = methodMatch ? pathRegex.exec(request.path) : null
 
       if (methodMatch && pathMatch) {
         if (pathMatch.length > 1) {

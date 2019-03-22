@@ -8,7 +8,7 @@ test("can spawn server and serve a route", async t => {
   const route = Route.GET("(.*)", async req => {
     routeHandlerWasCalled = true
     t.is(req.method, "GET")
-    t.is(req.path(), "/")
+    t.is(req.path, "/")
     return Response.Text("Hello World")
   })
   const service = Service(route)
@@ -60,7 +60,7 @@ test("requesting an unhandled URL results in a 404 error", async t => {
 
 test("can parse query parameters", async t => {
   const service = Service([
-    Route.GET("/", (request) => Response.JSON(request.query()))
+    Route.GET("/", (request) => Response.JSON(request.query))
   ])
 
   const response = await request(service.handler())

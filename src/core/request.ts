@@ -64,6 +64,8 @@ export interface Request<
   readonly headers: http.OutgoingHttpHeaders
   readonly method: string
   readonly params: Params
+  readonly path: string
+  readonly query: Query
   readonly url: string
   readonly rawHeaders: string[]
   readonly rawRequest: http.IncomingMessage
@@ -73,8 +75,6 @@ export interface Request<
   buffer(): Promise<Buffer>
   get(headerName: string): string | undefined
   getAll(headerName: string): string[]
-  path(): string
-  query(): Query
   stream(): stream.Readable
 
   derive<
@@ -111,11 +111,11 @@ const requestPrototype: Pick<Request, "buffer" | "derive" | "get" | "getAll" | "
         return toArray(headers[key])
     }
   },
-  path(this: Request) {
+  get path(this: Request) {
     const parsedURL = getParsedURL(this)
     return parsedURL.pathname as string
   },
-  query(this: Request) {
+  get query(this: Request) {
     const parsedQuery = getParsedQuery(this)
     return parsedQuery
   },
