@@ -1,6 +1,21 @@
-# SRV
+<h1 align="center">SRV</h1>
 
-Node.js server frameworks rethought. Functional, lean, performant.
+<p align="center">
+  <b>Node.js servers rethought: Functional, lean, performant.</b>
+</p>
+
+<p align="center">
+  <a href="https://travis-ci.org/andywer/srv"><img alt="Travis build status" src="https://img.shields.io/travis/andywer/srv.svg?logo=travis&style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/@andywer/srv"><img alt="Travis build status" src="https://img.shields.io/npm/v/andywer/srv.svg?logo=npm&style=flat-square" /></a>
+</p>
+
+<br />
+
+What if we were to write [express](https://github.com/expressjs/express) from scratch in 2019...
+
+Would we use async functions and promises? Would we make it more functional? With TypeScript in mind?
+
+Sure we would! So here we go.
 
 * Built for modern JavaScript / TypeScript
 * Functional - Take a request, return a response
@@ -8,7 +23,7 @@ Node.js server frameworks rethought. Functional, lean, performant.
 * Few dependencies & less than 1000 lines of code
 
 <p align="center">
-  <b>Status: Experimental ⚠️</b>
+  <b>⚠️ Status: Experimental ⚠️</b>
 </p>
 
 ## At a glance
@@ -44,13 +59,7 @@ Find some documentation and sample code here. Work in progress right now.
 * [Routing](./docs/routing.md)
 * [Middleware](./docs/middleware.md)
 
-## Motivation
-
-What if we were to write [express](https://github.com/expressjs/express) from scratch in 2019...
-
-*Would we use async functions and promises?* - Definitely. *Would we make it more functional?* - Pretty sure. *With TypeScript in mind?* - Of course.
-
-Well, here we go!
+## Features
 
 <details>
   <summary><b>Async functions</b></summary>
@@ -136,14 +145,6 @@ type RequestHandler = (request: Request, next?: NextCallback) => Response | Prom
 ```ts
 type NextCallback = (req: Request) => Response | Promise<Response>
 ```
-</details>
-
-<details>
-  <summary><b>Statically typed</b></summary>
-
-TypeScript all the way! You don't need to use TypeScript to use SRV, though, of course.
-
-It will work just as well with good old JavaScript.
 </details>
 
 ## Debugging
