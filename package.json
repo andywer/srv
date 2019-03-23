@@ -1,6 +1,6 @@
 {
   "name": "@andywer/srv",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Node.js server rethought. Functional, clean, performant.",
   "license": "MIT",
   "author": "Andy Wermke (https://github.com/andywer)",
