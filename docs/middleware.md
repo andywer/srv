@@ -71,3 +71,20 @@ async function CustomErrorMiddleware(request: Request, next: RequestHandler) {
 
 export default CustomErrorMiddleware
 ```
+
+## Extending / Modifying the request
+
+```ts
+import { Middleware, Request, RequestHandler } from "@andywer/srv"
+import { Logger } from "./logger"
+
+function LoggingMiddleware(logger: Logger): Middleware {
+  return async (request: Request, next: RequestHandler) => {
+    const requestWithLogger = request.derive({
+      log: logger
+    })
+    // typeof requestWithLogger.log === Logger
+    return next(requestWithLogger)
+  }
+}
+```

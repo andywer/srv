@@ -24,6 +24,7 @@ import {
 
 const greet = Route.GET("/welcome", async (request) => {
   const name = request.query.name
+
   return Response.JSON({
     name: "Greeting service",
     welcome: name ? `Hello, ${name}!` : `Hi there!`
@@ -48,9 +49,7 @@ Find some documentation and sample code here. Work in progress right now.
 
 What if we were to write [express](https://github.com/expressjs/express) from scratch in 2019...
 
-Would we use async functions and promises? - Definitely.<br />
-Would we make it more functional? - I think so.<br />
-With TypeScript in mind? - Of course.<br />
+*Would we use async functions and promises?* - Definitely. *Would we make it more functional?* - Pretty sure. *With TypeScript in mind?* - Of course.
 
 Well, here we go!
 
