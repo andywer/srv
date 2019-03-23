@@ -5,7 +5,6 @@ Node.js server frameworks rethought. Functional, lean, performant.
 * Built for modern JavaScript / TypeScript
 * Functional - Take a request, return a response
 * Explicit - Clear static types
-* Easier debugging by immutable, but extendable data
 * Few dependencies & less than 1000 lines of code
 
 <p align="center">
@@ -122,6 +121,20 @@ function LoggingMiddleware(logger: Logger): Middleware {
     return next(requestWithLogger)
   }
 }
+```
+</details>
+
+<details>
+  <summary><b>Everything is a function</b></summary>
+
+The code base is relatively simple. Middlewares, routes and routers, they are all just implementations of the following function type:
+
+```ts
+type RequestHandler = (request: Request, next?: NextCallback) => Response | Promise<Response>
+```
+
+```ts
+type NextCallback = (req: Request) => Response | Promise<Response>
 ```
 </details>
 
