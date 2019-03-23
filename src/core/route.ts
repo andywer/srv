@@ -2,14 +2,16 @@ import DebugLogger from "debug"
 import pathToRegExp, { Key as PathKey } from "path-to-regexp"
 import { Request } from "./request"
 import { Response } from "./response"
+import { $route } from "./symbols"
 
 export type RequestHandler<Req extends Request = Request, Res extends Response = Response> = (request: Req) => Res | Promise<Res>
 
-export interface Route<Req extends Request = Request, Res extends Response = Response> {
-  [Symbol.toStringTag]: string
-  handler: RequestHandler<Req, Res>
-  method?: string
-  pathTemplate?: string
+export interface Route<Req extends Request = Request, Res extends Response = Response> extends RequestHandler<Req, Res> {
+  [Symbol.toPrimitive]: (hint: string) => string | null
+  [$route]: {
+    method?: string
+    pathTemplate?: string
+  }
 }
 
 interface RouteCreators {
@@ -27,8 +29,10 @@ interface RouteCreators {
 
 const debug = DebugLogger("srv:route")
 
+export const isRoute = (thing: any): thing is Route => thing && typeof thing === "function" && thing[$route]
+
 export function assertRoute(route: any): Route {
-  if (route && typeof route === "object" && typeof route.handler === "function") {
+  if (isRoute(route)) {
     return route
   } else {
     throw Error(`Expected a route (or router), but got: ${route}`)
@@ -85,16 +89,20 @@ interface RouteOptions {
 }
 
 export const Route = function Route(handler: RequestHandler, options: RouteOptions = {}): Route {
-  return {
-    get [Symbol.toStringTag]() {
-      return options.pathTemplate
-        ? `[Route ${options.method || "*"} ${options.pathTemplate}]`
-        : `[Route]`
+  return Object.assign(handler, {
+    [Symbol.toPrimitive](hint: string) {
+      if (hint === "string") {
+        return options.pathTemplate
+          ? `[Route ${options.method || "*"} ${options.pathTemplate}]`
+          : `[Route]`
+      }
+      return null
     },
-    handler,
-    method: options.method,
-    pathTemplate: options.pathTemplate
-  }
+    [$route]: {
+      method: options.method,
+      pathTemplate: options.pathTemplate
+    }
+  })
 } as ((handler: RequestHandler, options?: RouteOptions) => Route) & RouteCreators
 
 Route.ANY = VerbRouteHandler("*")

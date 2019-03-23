@@ -2,6 +2,10 @@
 
 ## Using middlewares
 
+Using middlewares is trivial as under the hood routes and routers are implemented as middleware-compatible functions, anyway. Just pass an array with all the middlewares and routes you want to apply to `Service()`.
+
+Note: Order matters. First middlewares will be applied first, first routes will be checked first.
+
 ```ts
 import { Response, Route, Service } from "@andywer/srv"
 import FancyMiddleware from "./middlewares/fancy"
@@ -11,7 +15,7 @@ const greet = Route.GET("/", async () => Response.Text("Hello world"))
 const middlewares = [
   FancyMiddleware()
 ]
-const service = Service([ greet ], middlewares)
+const service = Service([ ...middlewares, greet ])
 
 service.listen(8080)
   .catch(console.error)
@@ -72,7 +76,7 @@ async function CustomErrorMiddleware(request: Request, next: RequestHandler) {
 export default CustomErrorMiddleware
 ```
 
-## Extending / Modifying the request
+## Extending / Modifying the Request object
 
 ```ts
 import { Middleware, Request, RequestHandler } from "@andywer/srv"

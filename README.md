@@ -4,8 +4,8 @@ Node.js server frameworks rethought. Functional, lean, performant.
 
 * Built for modern JavaScript / TypeScript
 * Functional - Take a request, return a response
-* Explicit - No context objects
-* Immutable, but extendable data makes debugging easy
+* Explicit - Clear static types
+* Easier debugging by immutable, but extendable data
 * Few dependencies & less than 1000 lines of code
 
 <p align="center">
