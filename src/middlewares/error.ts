@@ -12,7 +12,14 @@ export const DefaultErrorMiddleware: Middleware =
   async function DefaultErrorMiddleware(request: Request, next: RequestHandler): Promise<Response>
 {
   try {
-    return await next(request)
+    const response = await next(request)
+    if (!response || typeof response !== "object") {
+      throw Error(
+        `No response returned by handlers for request ${request.method} ${request.url}\n` +
+        `  Return value was: ${response}`
+      )
+    }
+    return response
   } catch (error) {
     if (!error) {
       logToStderr(Error("Falsy value was thrown."))
