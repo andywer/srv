@@ -20,12 +20,12 @@ async function runRequestHandlerStack(stack: Middleware[], request: Request): Pr
   let stackLayerIndex = 0
   const entryHandler = stack[0]
 
-  const next = (refinedRequest: Request): Promise<Response> => {
+  const next = async (refinedRequest: Request): Promise<Response> => {
     const nextHandler = stack[++stackLayerIndex]
     if (nextHandler) {
-      return Promise.resolve(nextHandler(refinedRequest, next))
+      return nextHandler(refinedRequest, next)
     } else {
-      return Promise.resolve(Response.Skip())
+      return Response.Skip()
     }
   }
   return entryHandler(request, next)

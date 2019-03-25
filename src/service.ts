@@ -28,7 +28,7 @@ function createRequestHandler(stack: Middleware[], onUnhandledError: (error: Err
   return function httpRequestHandler(req: http.IncomingMessage, res: http.ServerResponse) {
     const request = Request(req)
 
-    Promise.resolve(rootRouter(request))
+    ;(rootRouter(request) as Promise<Response>)
       .then(response => {
         if (response.skip) {
           // Some route handlers were run, but none of them felt responsible for this request
