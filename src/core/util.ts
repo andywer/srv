@@ -3,7 +3,9 @@ export function deriveImmutable<
   Props extends { [key: string]: any }
 >(base: Base, props: Props): Base & Props {
   const propDescriptors: PropertyDescriptorMap = {}
-  for (const key of Object.keys(props)) {
+
+  // Using for..in here, since it's faster than Object.keys()
+  for (const key in props) {
     propDescriptors[key] = {
       enumerable: true,
       value: props[key],
