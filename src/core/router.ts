@@ -1,3 +1,9 @@
+/*
+ * Keep in mind that the router is a very performance-sensitive piece of software.
+ * That is also why all `debug()` calls have been wrapped in an explicit
+ * `if (debug.enabled)` here: Too skip the message creation if it's not gonna be logged.
+ */
+
 import DebugLogger from "debug"
 import { Middleware } from "../types"
 import { Request } from "./request"
@@ -35,16 +41,22 @@ function routeToMiddleware(route: Route): Middleware {
   assertRoute(route)
   return async (request, next): Promise<Response> => {
     if (route[$route].method && route[$route].method !== request.method) {
-      debug(`Skipping route ${route}. Reason: HTTP method does not match.`)
+      if (debug.enabled) {
+        debug(`Skipping route ${route}. Reason: HTTP method does not match.`)
+      }
       return next(request)
     }
 
     const response = await route(request)
     if (response.skip) {
-      debug(`Route handler ${route} returned Route.Skip()`)
+      if (debug.enabled) {
+        debug(`Route handler ${route} returned Route.Skip()`)
+      }
       return next(request)
     } else {
-      debug(`Route handler ${route} returned response. Done.`)
+      if (debug.enabled) {
+        debug(`Route handler ${route} returned response. Done.`)
+      }
       return response
     }
   }
@@ -61,7 +73,9 @@ export function Router(handlers: Array<Middleware | Route>): Route {
   })
 
   const handler = (request: Request) => {
-    debug(`Running ${router} for request... ${request.method} ${request.url}`)
+    if (debug.enabled) {
+      debug(`Running ${router} for request... ${request.method} ${request.url}`)
+    }
     return runRequestHandlerStack(stack, request)
   }
 
