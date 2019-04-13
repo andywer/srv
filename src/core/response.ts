@@ -293,7 +293,8 @@ export function applyResponseTo(response: Response, res: http.ServerResponse) {
   res.statusCode = response.status
   res.statusMessage = statuses[response.status] || res.statusMessage
 
-  for (const headerName of Object.keys(headers)) {
+  // Using for..in here, since it's faster than Object.keys()
+  for (const headerName in headers) {
     const headerValue = headers[headerName]
     if (typeof headerValue !== "undefined") {
       res.setHeader(headerName, headerValue)

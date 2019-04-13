@@ -85,7 +85,7 @@ export interface Request<
   ): Request<NewParams, NewQuery>
 }
 
-const requestPrototype: Pick<Request, "buffer" | "derive" | "get" | "getAll" | "path" | "query" | "stream"> = {
+const RequestBase: Pick<Request, "buffer" | "derive" | "get" | "getAll" | "path" | "query" | "stream"> = {
   buffer(this: Request) {
     return streamToBuffer(this.stream())
   },
@@ -125,7 +125,7 @@ const requestPrototype: Pick<Request, "buffer" | "derive" | "get" | "getAll" | "
 }
 
 export function Request(req: http.IncomingMessage): Request {
-  return Object.create(requestPrototype, {
+  return Object.create(RequestBase, {
     [$parsedQuery]: {
       enumerable: false,
       writable: true,
