@@ -89,3 +89,17 @@ test("can parse path parameters", async t => {
     secondary: "bar"
   })
 })
+
+test("can throw a response", async t => {
+  const service = Service([
+    Route.GET("/", () => {
+      throw Response.JSON({ skipped: true })
+    })
+  ])
+
+  const response = await request(service.handler())
+    .get("/")
+    .expect(200)
+
+  t.deepEqual(response.body, { skipped: true })
+})
