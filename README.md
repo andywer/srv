@@ -86,12 +86,12 @@ const greet = Route.GET("/health", async () => {
 </details>
 
 <details>
-  <summary><b>Functional</b></summary>
+  <summary><b>Functional route handlers</b></summary>
 
 Take a request, return a response. Lean, clean, easy to test and debug.
 
 ```ts
-import { Response, Route } from "@andywer/srv"
+import { Response, Route, Router } from "@andywer/srv"
 import { queryUserByID } from "./database/users"
 
 const getUser = Route.GET("/user/:id", async request => {
@@ -109,6 +109,10 @@ const getUser = Route.GET("/user/:id", async request => {
   }
   return Response.JSON(200, headers, user)
 })
+
+export const router = Router([
+  getUser
+])
 ```
 </details>
 
@@ -117,11 +121,13 @@ const getUser = Route.GET("/user/:id", async request => {
 
 Stop passing data from middlewares to route handlers by dumping it in an untypeable `context`. Take the request object, extend it, pass it down to the route handler.
 
+By applying middlewares in a direct and explicit manner, the passed requests and responses are completely type-safe, even if customized by middlewares.
+
 ```ts
-import { Middleware, Request, RequestHandler } from "@andywer/srv"
+import { Middleware, Request, RequestHandler, Service } from "@andywer/srv"
 import { Logger } from "./logger"
 
-function LoggingMiddleware(logger: Logger): Middleware {
+export default function LoggingMiddleware(logger: Logger): Middleware {
   return async (request: Request, next: RequestHandler) => {
     const requestWithLogger = request.derive({
       log: logger
@@ -130,6 +136,19 @@ function LoggingMiddleware(logger: Logger): Middleware {
     return next(requestWithLogger)
   }
 }
+```
+
+```ts
+import { composeMiddlewares, Service } from "@andywer/srv"
+import logger from "./logger"
+import router from "./routes"
+
+const applyMiddlewares = composeMiddlewares(
+  LoggingMiddleware(logger),
+  SomeOtherMiddleware()
+)
+
+const service = Service(applyMiddlewares(router))
 ```
 </details>
 
