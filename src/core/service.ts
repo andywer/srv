@@ -1,11 +1,11 @@
 import * as http from "http"
 import stoppable from "stoppable"
-import { Request } from "./core/request"
-import { applyResponseTo, Response } from "./core/response"
-import { Route } from "./core/route"
-import { Router } from "./core/router"
-import { DefaultErrorMiddleware } from "./middlewares/error"
-import { HttpRequestHandler, Middleware } from "./types"
+import { Request } from "./request"
+import { applyResponseTo, Response } from "./response"
+import { Route } from "./route"
+import { Router } from "./router"
+import { DefaultErrorMiddleware } from "../middlewares/error"
+import { HttpRequestHandler, Middleware } from "../types"
 
 export interface Service {
   readonly stack: Middleware[]
@@ -41,7 +41,7 @@ function createRequestHandler(stack: Middleware[], onUnhandledError: (error: Err
 }
 
 export function Service(
-  requestHandlers: Route | Array<Middleware | Route>,
+  entrypoint: Middleware | Route,
   options: ServiceOptions = {}
 ) {
   const {
@@ -49,11 +49,9 @@ export function Service(
     skipDefaultMiddlewares = false
   } = options
 
-  const customHandlers = Array.isArray(requestHandlers) ? requestHandlers : [requestHandlers]
-
   const stack: Middleware[] = [
     ...(skipDefaultMiddlewares ? [] : defaultMiddlewares),
-    ...customHandlers
+    entrypoint
   ]
 
   const defaultErrorHandler = (error: any) => {
