@@ -9,10 +9,14 @@ import { deriveImmutable } from "./util"
 
 // TODO: Delegate response methods (<https://github.com/koajs/koa/blob/master/lib/context.js#L213>)
 
-type AnyParams = { [name: string]: string }
-type AnyQuery = { [name: string]: string | string[] }
-
 type ParsedURL = Url
+
+export interface AnyParams {
+  [name: string]: string
+}
+export interface AnyQuery {
+  [name: string]: string | string[]
+}
 
 const $parsedQuery = Symbol("parsedQuery")
 const $parsedURL = Symbol("parsedURL")

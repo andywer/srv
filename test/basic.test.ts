@@ -1,6 +1,6 @@
 import test from "ava"
 import request from "supertest"
-import { Response, Route, Service } from "../src/index"
+import { composeMiddlewares, Middleware, Response, Route, Router, Service } from "../src/index"
 
 test("can spawn server and serve a route", async t => {
   let routeHandlerWasCalled = false
@@ -34,9 +34,9 @@ test("service.listen() works", async t => {
 })
 
 test("can redirect", async t => {
-  const service = Service([
+  const service = Service(
     Route.GET("(.*)", () => Response.Redirect("https://github.com/andywer"))
-  ])
+  )
 
   await request(service.handler())
     .get("/")
@@ -47,9 +47,9 @@ test("can redirect", async t => {
 })
 
 test("requesting an unhandled URL results in a 404 error", async t => {
-  const service = Service([
+  const service = Service(
     Route.GET("/", () => Response.Text(""))
-  ])
+  )
 
   await request(service.handler())
     .get("/wtf")
@@ -59,9 +59,9 @@ test("requesting an unhandled URL results in a 404 error", async t => {
 })
 
 test("can parse query parameters", async t => {
-  const service = Service([
+  const service = Service(
     Route.GET("/", (request) => Response.JSON(request.query))
-  ])
+  )
 
   const response = await request(service.handler())
     .get("/")
@@ -75,9 +75,9 @@ test("can parse query parameters", async t => {
 })
 
 test("can parse path parameters", async t => {
-  const service = Service([
+  const service = Service(
     Route.GET("/:primary/test/:secondary/(.+)", (request) => Response.JSON(request.params))
-  ])
+  )
 
   const response = await request(service.handler())
     .get("/foo/test/bar/add/2")
@@ -91,15 +91,48 @@ test("can parse path parameters", async t => {
 })
 
 test("can throw a response", async t => {
-  const service = Service([
+  const service = Service(
     Route.GET("/", () => {
       throw Response.JSON({ skipped: true })
     })
-  ])
+  )
 
   const response = await request(service.handler())
     .get("/")
     .expect(200)
 
   t.deepEqual(response.body, { skipped: true })
+})
+
+test("can compose middlewares", async t => {
+  const suffix = (textToAppend: string): Middleware => async (request, nextHandler) => {
+    const response = await nextHandler(request)
+    const body = response.body as Buffer
+    return response.derive({
+      body: Buffer.concat([body, Buffer.from(textToAppend, "utf-8") ])
+    })
+  }
+  const trackTime = (): Middleware => async (request, nextHandler) => {
+    const timeStart = Date.now()
+    const response = await nextHandler(request)
+    return response.derive({
+      headers: {
+        ...response.headers,
+        "X-Time": Date.now() - timeStart
+      }
+    })
+  }
+
+  const applyMiddlewares = composeMiddlewares(suffix(" Hi!"), trackTime())
+  const router = Router([
+    Route.GET("/", () => Response.Text("Hello, world!"))
+  ])
+  const service = Service(applyMiddlewares(router))
+
+  const response = await request(service.handler())
+    .get("/")
+    .expect(200)
+
+  t.deepEqual(response.text, "Hello, world! Hi!")
+  t.regex(response.header["x-time"], /^[0-9]+$/)
 })
