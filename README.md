@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://travis-ci.org/andywer/srv"><img alt="Travis build status" src="https://img.shields.io/travis/andywer/srv.svg?logo=travis&style=flat-square" /></a>
-  <a href="https://www.npmjs.com/package/@andywer/srv"><img alt="Travis build status" src="https://img.shields.io/npm/v/andywer/srv.svg?logo=npm&style=flat-square" /></a>
+  <a href="https://www.npmjs.com/package/@andywer/srv"><img alt="Travis build status" src="https://img.shields.io/npm/v/@andywer/srv.svg?logo=npm&style=flat-square" /></a>
 </p>
 
 <br />
