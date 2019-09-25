@@ -49,25 +49,25 @@ type JSONResponse<
 type SkipResponse = Response & { skip: true, status: 200 }
 
 interface ResponseCreators {
-  Binary<Status extends number, Head extends Headers>
-    (blob: Buffer, options?: ResponseOptions<Status, never, Head>): Response<Status, Buffer, Head>
   Binary<Status extends number>(status: number, blob: Buffer): Response<Status>
   Binary<Status extends number>(status: number, headers: Headers, blob: Buffer): Response<Status>
+  Binary<Status extends number, Head extends Headers>
+    (blob: Buffer, options?: ResponseOptions<Status, never, Head>): Response<Status, Buffer, Head>
 
-  JSON<Status extends number, Body, Head extends Headers>
-    (data: any, options?: ResponseOptions<Status, never, Head>): JSONResponse<Status, Body, Head>
   JSON<Status extends number>(status: number, data: any): Response<Status>
   JSON<Status extends number>(status: number, headers: Headers, data: any): Response<Status>
+  JSON<Status extends number, Body, Head extends Headers>
+    (data: any, options?: ResponseOptions<Status, never, Head>): JSONResponse<Status, Body, Head>
 
-  Stream<Status extends number, Head extends Headers>
-    (stream: stream.Readable, options?: ResponseOptions<Status, never, Head>): Response<Status, stream.Readable, Head>
   Stream<Status extends number>(status: number, stream: stream.Readable): Response<Status>
   Stream<Status extends number>(status: number, headers: Headers, stream: stream.Readable): Response<Status>
+  Stream<Status extends number, Head extends Headers>
+    (stream: stream.Readable, options?: ResponseOptions<Status, never, Head>): Response<Status, stream.Readable, Head>
 
-  Text<Status extends number, Head extends Headers>
-    (data: string, options?: ResponseOptions<Status, never, Head>): Response<Status, Buffer, Head>
   Text<Status extends number>(status: Status, data: string): Response<Status>
   Text<Status extends number>(status: Status, headers: Headers, data: string): Response<Status>
+  Text<Status extends number, Head extends Headers>
+    (data: string, options?: ResponseOptions<Status, never, Head>): Response<Status, Buffer, Head>
 
   NotFound(request: Request): Response<404>
   Redirect(url: string): Response<302>
