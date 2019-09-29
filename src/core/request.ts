@@ -62,14 +62,14 @@ export interface Request<
   Params extends AnyParams = AnyParams,
   Query extends AnyQuery = AnyQuery
 > {
-  [$parsedQuery]: Query | null
+  [$parsedQuery]: Partial<Query> | null
   [$parsedURL]: ParsedURL | null
   readonly encrypted: boolean
   readonly headers: http.OutgoingHttpHeaders
   readonly method: string
   readonly params: Params
   readonly path: string
-  readonly query: Query
+  readonly query: Partial<Query>
   readonly url: string
   readonly rawHeaders: string[]
   readonly rawRequest: http.IncomingMessage
