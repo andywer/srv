@@ -69,8 +69,10 @@ interface ResponseCreators {
   Text<Status extends number, Head extends Headers>
     (data: string, options?: ResponseOptions<Status, never, Head>): Response<Status, Buffer, Head>
 
-  NotFound(request: Request): Response<404>
   Redirect(url: string): Response<302>
+  Redirect<Status extends 301 | 302>(status: Status, url: string): Response<Status>
+
+  NotFound(request: Request): Response<404>
   Skip(): SkipResponse
 }
 
@@ -267,10 +269,21 @@ Response.NotFound = function NotFound(request: Request) {
   })
 }
 
-Response.Redirect = function Redirect(url: string) {
+Response.Redirect = function Redirect(...args: [string] | [number, string]) {
+  let url: string
+  let status: number = 302
+
+  if (typeof args[0] === "number") {
+    status = args[0]
+    url = args[1] as string
+  } else {
+    url = args[0]
+  }
+
   // TODO: If client accepts HTML, send HTML
   const text = `Redirecting to ${url}.`
-  return Response.Text(302, { "Location": url }, text)
+
+  return Response.Text<any>(status, { "Location": url }, text)
 }
 
 const skipResponse: SkipResponse = (function createSkipResponse() {
