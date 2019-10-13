@@ -11,7 +11,7 @@ export interface Service {
   readonly stack: Middleware[]
 
   handler(onUnhandledError?: (error: Error) => void): HttpRequestHandler
-  listen(port?: number, host?: string): Promise<stoppable.StoppableServer>
+  listen(port?: number, host?: string): Promise<http.Server>
 }
 
 export interface ServiceOptions {
@@ -73,7 +73,7 @@ export function Service(
       const handler = service.handler(errorHandler)
       const server = stoppable(http.createServer(handler), gracefulCloseTimeout)
 
-      return new Promise(resolve => {
+      return new Promise<http.Server>(resolve => {
         server.listen(port, host, () => resolve(server))
       })
     }
