@@ -6,6 +6,7 @@
   "author": "Andy Wermke (https://github.com/andywer)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "repository": "github:andywer/srv",
   "scripts": {
     "prebuild": "rimraf dist/",
     "build": "tsc -p ./tsconfig.build.json",
