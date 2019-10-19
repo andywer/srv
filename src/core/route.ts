@@ -14,17 +14,47 @@ export interface Route<Req extends Request = Request, Res extends Response = Res
   }
 }
 
-interface RouteCreators {
-  ANY(path: string, handler: RequestHandler): Route
-  GET(path: string, handler: RequestHandler): Route
-  DELETE(path: string, handler: RequestHandler): Route
-  HEAD(path: string, handler: RequestHandler): Route
-  LINK(path: string, handler: RequestHandler): Route
-  OPTIONS(path: string, handler: RequestHandler): Route
-  PATCH(path: string, handler: RequestHandler): Route
-  POST(path: string, handler: RequestHandler): Route
-  PUT(path: string, handler: RequestHandler): Route
-  UNLINK(path: string, handler: RequestHandler): Route
+export interface RouteCreators {
+  ANY<Req extends Request = Request, Res extends Response = Response>(
+    path: string,
+    handler: RequestHandler<Req, Res>
+  ): Route<Req, Res>
+  GET<Req extends Request = Request, Res extends Response = Response>(
+    path: string,
+    handler: RequestHandler<Req, Res>
+  ): Route<Req, Res>
+  DELETE<Req extends Request = Request, Res extends Response = Response>(
+    path: string,
+    handler: RequestHandler<Req, Res>
+  ): Route<Req, Res>
+  HEAD<Req extends Request = Request, Res extends Response = Response>(
+    path: string,
+    handler: RequestHandler<Req, Res>
+  ): Route<Req, Res>
+  LINK<Req extends Request = Request, Res extends Response = Response>(
+    path: string,
+    handler: RequestHandler<Req, Res>
+  ): Route<Req, Res>
+  OPTIONS<Req extends Request = Request, Res extends Response = Response>(
+    path: string,
+    handler: RequestHandler<Req, Res>
+  ): Route<Req, Res>
+  PATCH<Req extends Request = Request, Res extends Response = Response>(
+    path: string,
+    handler: RequestHandler<Req, Res>
+  ): Route<Req, Res>
+  POST<Req extends Request = Request, Res extends Response = Response>(
+    path: string,
+    handler: RequestHandler<Req, Res>
+  ): Route<Req, Res>
+  PUT<Req extends Request = Request, Res extends Response = Response>(
+    path: string,
+    handler: RequestHandler<Req, Res>
+  ): Route<Req, Res>
+  UNLINK<Req extends Request = Request, Res extends Response = Response>(
+    path: string,
+    handler: RequestHandler<Req, Res>
+  ): Route<Req, Res>
 }
 
 const debug = DebugLogger("srv:route")
@@ -39,18 +69,22 @@ export function assertRoute(route: any): Route {
   }
 }
 
-function addParamsToRequest(request: Request, pathParamKeys: PathKey[], unnamedParams: string[]) {
+function addParamsToRequest<Req extends Request>(
+  request: Req,
+  pathParamKeys: PathKey[],
+  unnamedParams: string[]
+): Req {
   const params: { [name: string]: string } = {}
 
   for (let i = 0; i < pathParamKeys.length; i++) {
     params[pathParamKeys[i].name] = unnamedParams[i]
   }
 
-  return request.derive({ params })
+  return request.derive({ params }) as Req
 }
 
-function VerbRouteHandler(method: string | "*") {
-  return function (path: string, routeHandler: RequestHandler): Route {
+function VerbRouteHandler<Req extends Request, Res extends Response>(method: string | "*") {
+  return function (path: string, routeHandler: RequestHandler<Req, Res>): Route<Req, Res> {
     const matchAnyVerb = method === "*"
 
     const pathParamKeys: PathKey[] = []
@@ -58,7 +92,7 @@ function VerbRouteHandler(method: string | "*") {
 
     debug(`Creating route handler... ${matchAnyVerb ? "" : method} ${path} (Regex: ${pathRegex})`)
 
-    const handler = (request: Request) => {
+    const handler = (request: Req): Res | Promise<Res> => {
       const methodMatch = matchAnyVerb || request.method === method
       const pathMatch = methodMatch ? pathRegex.exec(request.path) : null
 
@@ -73,10 +107,10 @@ function VerbRouteHandler(method: string | "*") {
         return routeHandler(request)
       } else {
         debug(`Skip: Route handler [${matchAnyVerb ? "" : method} ${path}] does not match ${request.method} ${request.url}`)
-        return Response.Skip()
+        return Response.Skip() as Res
       }
     }
-    return Route(handler, {
+    return Route<Req, Res>(handler, {
       method: method && method !== "*" ? method : undefined,
       pathTemplate: path
     })
@@ -88,7 +122,14 @@ interface RouteOptions {
   pathTemplate?: string
 }
 
-export const Route = function Route(handler: RequestHandler, options: RouteOptions = {}): Route {
+export interface RouteFactory extends RouteCreators {
+  <Req extends Request, Res extends Response>(handler: RequestHandler<Req, Res>, options?: RouteOptions): Route<Req, Res>
+}
+
+export const Route: RouteFactory = function Route<Req extends Request, Res extends Response>(
+  handler: RequestHandler<Req, Res>,
+  options: RouteOptions = {}
+): Route<Req, Res> {
   return Object.assign(handler, {
     [Symbol.toPrimitive](hint: string) {
       if (hint === "string") {
@@ -103,7 +144,7 @@ export const Route = function Route(handler: RequestHandler, options: RouteOptio
       pathTemplate: options.pathTemplate
     }
   })
-} as ((handler: RequestHandler, options?: RouteOptions) => Route) & RouteCreators
+}
 
 Route.ANY = VerbRouteHandler("*")
 Route.GET = VerbRouteHandler("GET")
