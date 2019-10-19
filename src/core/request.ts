@@ -83,10 +83,11 @@ export interface Request<
 
   derive<
     NewParams extends AnyParams = AnyParams,
-    NewQuery extends AnyQuery = AnyQuery
+    NewQuery extends AnyQuery = AnyQuery,
+    NewProps extends Record<string, any> = {}
   >(
-    options: Partial<Request>
-  ): Request<NewParams, NewQuery>
+    options: Partial<Request> & NewProps
+  ): Request<NewParams, NewQuery> & NewProps
 }
 
 const RequestBase: Pick<Request, "buffer" | "derive" | "get" | "getAll" | "path" | "query" | "stream"> = {
@@ -95,9 +96,10 @@ const RequestBase: Pick<Request, "buffer" | "derive" | "get" | "getAll" | "path"
   },
   derive<
     NewParams extends AnyParams = AnyParams,
-    NewQuery extends AnyQuery = AnyQuery
-  >(this: Request, options: Partial<Request>) {
-    return deriveImmutable(this, options) as Request<NewParams, NewQuery>
+    NewQuery extends AnyQuery = AnyQuery,
+    NewProps extends Record<string, any> = {}
+  >(this: Request, options: Partial<Request> & NewProps) {
+    return deriveImmutable(this, options) as Request<NewParams, NewQuery> & NewProps
   },
   get(this: Request, headerName: string) {
     const values = this.getAll(headerName)

@@ -62,7 +62,51 @@ function routeToMiddleware(route: Route): Middleware {
   }
 }
 
-export function Router(handlers: Array<Middleware | Route>): Route {
+export interface Router {
+  <Req extends Request, Res extends Response>(
+    handlers: []
+  ): Route<Req, Res>
+  <Req extends Request, Res extends Response>(
+    handlers: [
+      Route<Req, Res>
+    ]
+  ): Route<Req, Res>
+  <Req extends Request, Res extends Response, Req1 extends Request>(
+    handlers: [
+      Middleware<Req, Req1, Res>,
+      ...Array<Route<Req1, Res>>
+    ]
+  ): Route<Req, Res>
+  <Req extends Request, Res extends Response, Req1 extends Request, Req2 extends Request>(
+    handlers: [
+      Middleware<Req, Req1, Res>,
+      Middleware<Req1, Req2, Res>,
+      ...Array<Route<Req2, Res>>
+    ]
+  ): Route<Req, Res>
+  <Req extends Request, Res extends Response, Req1 extends Request, Req2 extends Request, Req3 extends Request>(
+    handlers: [
+      Middleware<Req, Req1, Res>,
+      Middleware<Req1, Req2, Res>,
+      Middleware<Req2, Req3, Res>,
+      ...Array<Route<Req3, Res>>
+    ]
+  ): Route<Req, Res>
+  <Req extends Request, Res extends Response, Req1 extends Request, Req2 extends Request, Req3 extends Request, Req4 extends Request>(
+    handlers: [
+      Middleware<Req, Req1, Res>,
+      Middleware<Req1, Req2, Res>,
+      Middleware<Req2, Req3, Res>,
+      Middleware<Req3, Req4, Res>,
+      ...Array<Route<Req4, Res>>
+    ]
+  ): Route<Req, Res>
+  <Req extends Request = Request, Res extends Response = Response>(
+    handlers: Array<Middleware | Route>
+  ): Route<Req, Res>
+}
+
+export const Router: Router = function Router(handlers: Array<Middleware | Route>): Route {
   const routerID = nextRouterID++
 
   debug(`Creating router #${routerID}...`)
