@@ -11,16 +11,18 @@
 
 <br />
 
-What if we were to write [express](https://github.com/expressjs/express) from scratch in 2019...
+What if we were to write [express](https://github.com/expressjs/express) from scratch in 2019…?
 
 Would we use async functions and promises? Would we make it more functional? With TypeScript in mind?
 
 Sure we would! So here we go.
 
-* Built for modern JavaScript / TypeScript
-* Functional - Take a request, return a response
-* Explicit - Clear static types
-* Few dependencies & less than 1000 lines of code
+🚀&nbsp;&nbsp;**Built for ES2017+ & TypeScript**<br/>
+🔌&nbsp;&nbsp;**Functional - Take a request, return a response**<br/>
+☝️&nbsp;&nbsp;**Explicit - Clear static types**<br/>
+🗜&nbsp;&nbsp;**Almost no dependencies & less than 1000 lines of code**<br/>
+
+<br />
 
 <p align="center">
   <b>⚠️ Status: Experimental ⚠️</b>
